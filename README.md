@@ -92,10 +92,10 @@ Download `b16_400m.pt` from the official UniMed‑CLIP release and place it unde
 
 ```bash
 # zero‑shot classification
-python runner/run.py   --baseline unimedclip   --variant +wstc   --dataset chestxray14   --batch_size 64   --split test
+python runner/run.py   --baseline unimedclip   --variant +wstc   --dataset chestxray14   --batch_size 64   --split test --seed 3 --metric acc --sample_limit 2000
 
 # retrieval with projection fine‑tuning
-python runner/run.py   --baseline unimedclip   --variant +wstc   --dataset rocOv2   --finetune   --ft_epochs 3 --ft_lr 1e-4
+python runner/run.py   --baseline unimedclip   --variant +wstc   --dataset rocOv2 
 ```
 
 ---
@@ -116,10 +116,10 @@ Key flags:
 
 ---
 
-## 7. Few‑Shot Segmentation (MoNuSeg)
+## 7. Few‑Shot Segmentation (ISIC2018)
 
 ```bash
-python trainer/train_seg.py   --baseline unimedclip   --variant +wstc_train   --dataset monuseg   --epochs 60   --batch_size 16
+python trainer/train_seg.py   --baseline unimedclip   --variant +wstc_train   --dataset isic2018   --epochs 50   --batch_size 32
 ```
 
 Loss = Dice + BCE (see `train_seg.py`).  Tip/Meta‑Adapter baselines use `forward_seg()` branch and do **not** affect classification pipelines.
@@ -146,41 +146,7 @@ logs/
 
 ---
 
-## 10. Citation
 
-```bibtex
-@inproceedings{gao2026wstc,
-  title     = {Task-Adaptive Visual–Linguistic Modeling via Semantic Embedding and Diffusion Projection},
-  author    = {Gao, S. and ...},
-  booktitle = {Proceedings of the 38th AAAI Conference on Artificial Intelligence},
-  year      = {2026}
-}
-```
 
----
-
-## 11. License
-
-Code is released for **non‑commercial research** under the MIT License.  
-External dependencies retain their original licenses.
-
----
-
-## 12. Contact
-
-Questions? Open an issue or email **<your-email>@example.com**.
-
----
-
-### 中文速览
-
-1. `conda env create -f environment.yml` 或 §2 手动安装  
-2. 数据集放入 `datasets/`（见 §3）  
-3. UniMedCLIP 权重放入 `baselines/UniMed-CLIP/checkpoints/`  
-4. 零样本：`python runner/run.py --baseline unimedclip --variant +wstc --dataset chestxray14`  
-5. k‑shot：`python trainer/train_cls.py --variant +wstc_train --kshot 5 ...`  
-6. 分割：`python trainer/train_seg.py --dataset monuseg`
-
----
 
 **Save this file as `README.md` in the root of your supplementary zip.**
