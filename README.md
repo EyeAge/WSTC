@@ -1,8 +1,5 @@
 # WSTC: Task‑Adaptive Visual–Linguistic Modeling via Semantic Embedding and Diffusion Projection
 
-> **AAAI 2026 Supplementary Code**  
-> Corresponding paper: _Task‑adaptive Visual‑Linguistic Modeling via Semantic Embedding and Diffusion Projection for Few/Zero‑Shot Medical Tasks_
-
 ---
 
 ## 1. Repository Structure
