@@ -2,7 +2,7 @@
 
 [//]: # (---)
 
-## 1. Repository Structure
+## 1. WSTC Structure
 
 ```text
 .
@@ -28,6 +28,7 @@
     ├── train_cls.py
     └── train_seg.py
 ```
+---
 Please get the initial code for UniMed-CLIP before running the code. Thanks to UniMed-CLIP model for supporting this project.
 The datasets used in this article are all open source datasets.
 ---
