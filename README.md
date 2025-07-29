@@ -25,12 +25,14 @@
 ├── runner/                  # zero‑shot & retrieval pipeline
 │   ├── run.py
 │   ├── dataset_zoo.py
+│   ├── logger.py
 │   └── model_zoo.py
 └── trainer/                 # few‑shot training pipelines
     ├── train_cls.py
     └── train_seg.py
 ```
-
+Please get the initial code for UniMed-CLIP before running the code. Thanks to UniMed-CLIP model for supporting this project.
+The datasets used in this article are all open source datasets.
 ---
 
 ## 2. Quick Environment Setup
