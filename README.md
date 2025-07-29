@@ -144,18 +144,3 @@ Loss = Dice + BCE (see `train_seg.py`).  Tip/Meta‑Adapter baselines use `for
 
 ---
 
-## 9. Expected Output Folders
-
-```
-logs/
-└── <timestamp>_<uuid>/
-    ├── metrics.json   # per‑epoch / per‑dataset scores
-    └── preds.npy      # raw logits or masks
-```
-
----
-
-
-
-
-**Save this file as `README.md` in the root of your supplementary zip.**
