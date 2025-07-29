@@ -67,15 +67,14 @@ matplotlib
 
 ## 3. Dataset Preparation
 
-| Dataset        | Script ID       | Default Path (after extraction) | Notes |
-|----------------|-----------------|---------------------------------|-------|
-| **ChestXray14**| `chestxray14`   | `datasets/chestxray14/`         | Place images in `images_flat/`, CSV in root |
-| **RSNA Pneumonia** | `rsna_pneu` | `datasets/rsna_pneu/`           | Expect `images/*.png` + `labels.csv` |
-| **PCam**       | `pcam`          | `datasets/pcam/`                | Tiles handled internally |
-| **MoNuSeg**    | `monuseg`       | `datasets/monuseg/`             | requires `train/` & `test/` splits |
-| **ISIC 2019**  | `isic2019`      | `datasets/isic2019/`            | follow official split |
-| **ROCO‑v2**    | `rocov2`        | `datasets/rocov2/`              | image–caption retrieval |
-| **MedFMC‑CAP** | `medfmc_cap`    | `datasets/medfmc_cap/`          | optional |
+| Dataset            | Script ID     | Default Path (after extraction) | Notes |
+|--------------------|---------------|---------------------------------|-------|
+| **ChestXray14**    | `chestxray14` | `datasets/chestxray14/`         | Place images in `images_flat/`, CSV in root |
+| **RSNA Pneumonia** | `rsna_pneu`   | `datasets/rsna_pneu/`           | Expect `images/*.png` + `labels.csv` |
+| **PCam**           | `pcam`        | `datasets/pcam/`                | Tiles handled internally |
+| **ISIC 2019**      | `isic2019`    | `datasets/isic2019/`            | follow official split |
+| **ROCO‑v2**        | `rocov2`      | `datasets/rocov2/`              | image–caption retrieval |
+| **ISIC 2018**      | `isic2018`    | `datasets/isic2018/`          | optional |
 
 > **Tip** – each dataset loader is defined in `runner/dataset_zoo.py`; modify paths if needed.
 
@@ -92,11 +91,21 @@ Download `b16_400m.pt` from the official UniMed‑CLIP release and place it unde
 
 ```bash
 # zero‑shot classification
-python runner/run.py   --baseline unimedclip   --variant +wstc   --dataset chestxray14   --batch_size 64   --split test --seed 3 --metric acc --sample_limit 2000
+python runner/run.py   --baseline unimedclip   --variant +wstc   --dataset chestxray14   --batch_size 64   --split test --seed 3 --metric acc --sample_limit 2000 --tau 1.3
 
-# retrieval with projection fine‑tuning
-python runner/run.py   --baseline unimedclip   --variant +wstc   --dataset rocOv2 
+# retrieval
+python runner/run.py   --baseline unimedclip   --variant +wstc   --dataset rocov2 
 ```
+Key flags:
+
+| Flag             | Description                                               | Example      |
+|------------------|-----------------------------------------------------------|--------------|
+| `--variant`      | `baseline` / `+wsam` / `+tcdam` / `+wstc` / `+wstc_train` | `+wstc`      |
+| `--metric`       | `auc` / `acc` (dataset‑specific default)                  | `auc`        |
+| `--sample_limit` | cap validation subset for speed                           | `2000`       |
+| `--baseline`     | `unimedclip` / `clip` / `medclip` / `biovil`              | `unimedclip` |
+| `--split`        | `test` / `val` / `train`                                  | `test`       |
+
 
 ---
 
@@ -108,11 +117,11 @@ python trainer/train_cls.py   --baseline unimedclip   --variant +wstc_train   --
 
 Key flags:
 
-| Flag             | Description                                                    | Example |
-|------------------|----------------------------------------------------------------|---------|
-| `--variant`      | `baseline` / `+wsam` / `+tcdam` / `+wstc` / `+wstc_train` | `+wstc` |
-| `--metric`       | `auc` / `acc` (dataset‑specific default)                      | `auc` |
-| `--val_lim`      | cap validation subset for speed                                | `2000` |
+| Flag             | Description                                               | Example      |
+|------------------|-----------------------------------------------------------|--------------|
+| `--variant`      | `baseline` / `+wsam` / `+tcdam` / `+wstc` / `+wstc_train` | `+wstc`      |
+| `--metric`       | `auc` / `acc` (dataset‑specific default)                  | `auc`        |
+| `--baseline`     | `tip-adapter_f` / `meta-adapter_f` / `unimedclip`         | `unimedclip` |
 
 ---
 
@@ -128,10 +137,10 @@ Loss = Dice + BCE (see `train_seg.py`).  Tip/Meta‑Adapter baselines use `for
 
 ## 8. Reproducing Table 2 & Table 3
 
-| Paper Table  | Script                           | Seeds | GPU (A100‑40 GB) | Time / run |
-|--------------|----------------------------------|-------|------------------|------------|
-| **Table 2**  | `trainer/train_cls.py` (k‑shot)  | 0,1,2 | ≤ 14 GB          | 2 h |
-| **Table 3**  | `runner/run.py` (zero‑shot)      | 0     | ≤ 12 GB          | 45 min |
+| Paper Table  | Script                           | Seeds | GPU (RTX4090‑24 GB) | Time / run |
+|--------------|----------------------------------|-------|---------------------|------------|
+| **Table 2**  | `trainer/train_cls.py` (k‑shot)  | 0,1,2 | ≤ 14 GB             | 2 h        |
+| **Table 3**  | `runner/run.py` (zero‑shot)      | 0     | ≤ 12 GB             | 20 min     |
 
 ---
 
