@@ -3,7 +3,8 @@
 [//]: # (---)
 
 ## 1. WSTC Structure
-
+Please get the initial code for UniMed-CLIP before running the code. Thanks to UniMed-CLIP model for supporting this project.
+The datasets used in this article are all open source datasets.
 ```text
 .
 ├── README.md                # <- THIS FILE
@@ -29,9 +30,7 @@
     └── train_seg.py
 ```
 ---
-Please get the initial code for UniMed-CLIP before running the code. Thanks to UniMed-CLIP model for supporting this project.
-The datasets used in this article are all open source datasets.
----
+
 
 ## 2. Quick Environment Setup
 
@@ -128,7 +127,7 @@ Key flags:
 ## 7. Few‑Shot Segmentation (ISIC2018)
 
 ```bash
-python trainer/train_seg.py   --baseline unimedclip   --variant +wstc_train   --dataset isic2018   --epochs 50   --batch_size 32
+python trainer/train_seg.py   --baseline unimedclip   --variant +wstc  --dataset isic2018   --epochs 50   --batch_size 32
 ```
 
 Loss = Dice + BCE (see `train_seg.py`).  Tip/Meta‑Adapter baselines use `forward_seg()` branch and do **not** affect classification pipelines.
