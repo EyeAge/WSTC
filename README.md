@@ -1,2 +1,186 @@
-# WSTC
-WSTC: Task-Adaptive Medical Vision–Language Model with Semantic Tokens and Diffusion Alignment
+# WSTC: Task‑Adaptive Visual–Linguistic Modeling via Semantic Embedding and Diffusion Projection
+
+> **AAAI 2026 Supplementary Code**  
+> Corresponding paper: _Task‑adaptive Visual‑Linguistic Modeling via Semantic Embedding and Diffusion Projection for Few/Zero‑Shot Medical Tasks_
+
+---
+
+## 1. Repository Structure
+
+```text
+.
+├── README.md                # <- THIS FILE
+├── requirements.txt         # Python dependencies (see §2)
+├── baselines/
+│   └── UniMed-CLIP/
+│       └── checkpoints/
+│           └── b16_400m.pt  # pre‑trained UniMedCLIP weights (download separately)
+├── datasets/                # external data (see §3)
+├── modules/                 # plug‑and‑play adapters
+│   ├── wsam.py
+│   ├── tcdam.py
+│   ├── text_projector.py
+│   ├── meta_conditioning.py
+│   └── wstc.py
+├── runner/                  # zero‑shot & retrieval pipeline
+│   ├── run.py
+│   ├── dataset_zoo.py
+│   └── model_zoo.py
+└── trainer/                 # few‑shot training pipelines
+    ├── train_cls.py
+    └── train_seg.py
+```
+
+---
+
+## 2. Quick Environment Setup
+
+The project is tested on **Python 3.9 / CUDA 11.8 / PyTorch 2.2+**.  
+We recommend creating a **conda** environment:
+
+```bash
+conda create -n wstc python=3.9
+conda activate wstc
+
+# ---- essential DL stack ----
+conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
+
+# ---- remaining Python libs ----
+pip install -r requirements.txt
+```
+
+`requirements.txt` (feel free to auto‑generate):
+
+```
+open_clip_torch>=2.23
+transformers>=4.41
+timm>=0.9
+scikit-learn>=1.5
+pandas
+tqdm
+tifffile
+Pillow
+matplotlib
+```
+
+---
+
+## 3. Dataset Preparation
+
+| Dataset        | Script ID       | Default Path (after extraction) | Notes |
+|----------------|-----------------|---------------------------------|-------|
+| **ChestXray14**| `chestxray14`   | `datasets/chestxray14/`         | Place images in `images_flat/`, CSV in root |
+| **RSNA Pneumonia** | `rsna_pneu` | `datasets/rsna_pneu/`           | Expect `images/*.png` + `labels.csv` |
+| **PCam**       | `pcam`          | `datasets/pcam/`                | Tiles handled internally |
+| **MoNuSeg**    | `monuseg`       | `datasets/monuseg/`             | requires `train/` & `test/` splits |
+| **ISIC 2019**  | `isic2019`      | `datasets/isic2019/`            | follow official split |
+| **ROCO‑v2**    | `rocov2`        | `datasets/rocov2/`              | image–caption retrieval |
+| **MedFMC‑CAP** | `medfmc_cap`    | `datasets/medfmc_cap/`          | optional |
+
+> **Tip** – each dataset loader is defined in `runner/dataset_zoo.py`; modify paths if needed.
+
+---
+
+## 4. Pre‑trained UniMedCLIP Checkpoint
+
+Download `b16_400m.pt` from the official UniMed‑CLIP release and place it under  
+`baselines/UniMed-CLIP/checkpoints/`.
+
+---
+
+## 5. Zero‑Shot & Retrieval Evaluation
+
+```bash
+# zero‑shot classification
+python runner/run.py   --baseline unimedclip   --variant +wstc   --dataset chestxray14   --batch_size 64   --split test
+
+# retrieval with projection fine‑tuning
+python runner/run.py   --baseline unimedclip   --variant +wstc   --dataset rocOv2   --finetune   --ft_epochs 3 --ft_lr 1e-4
+```
+
+---
+
+## 6. Few‑Shot Classification (k‑shot)
+
+```bash
+python trainer/train_cls.py   --baseline unimedclip   --variant +wstc_train   --dataset chestxray14   --kshot 5   --epochs 20   --batch_size 32
+```
+
+Key flags:
+
+| Flag             | Description                                                    | Example |
+|------------------|----------------------------------------------------------------|---------|
+| `--variant`      | `baseline` / `+wsam` / `+tcdam` / `+wstc` / `+wstc_train` | `+wstc` |
+| `--metric`       | `auc` / `acc` (dataset‑specific default)                      | `auc` |
+| `--val_lim`      | cap validation subset for speed                                | `2000` |
+
+---
+
+## 7. Few‑Shot Segmentation (MoNuSeg)
+
+```bash
+python trainer/train_seg.py   --baseline unimedclip   --variant +wstc_train   --dataset monuseg   --epochs 60   --batch_size 16
+```
+
+Loss = Dice + BCE (see `train_seg.py`).  Tip/Meta‑Adapter baselines use `forward_seg()` branch and do **not** affect classification pipelines.
+
+---
+
+## 8. Reproducing Table 2 & Table 3
+
+| Paper Table  | Script                           | Seeds | GPU (A100‑40 GB) | Time / run |
+|--------------|----------------------------------|-------|------------------|------------|
+| **Table 2**  | `trainer/train_cls.py` (k‑shot)  | 0,1,2 | ≤ 14 GB          | 2 h |
+| **Table 3**  | `runner/run.py` (zero‑shot)      | 0     | ≤ 12 GB          | 45 min |
+
+---
+
+## 9. Expected Output Folders
+
+```
+logs/
+└── <timestamp>_<uuid>/
+    ├── metrics.json   # per‑epoch / per‑dataset scores
+    └── preds.npy      # raw logits or masks
+```
+
+---
+
+## 10. Citation
+
+```bibtex
+@inproceedings{gao2026wstc,
+  title     = {Task-Adaptive Visual–Linguistic Modeling via Semantic Embedding and Diffusion Projection},
+  author    = {Gao, S. and ...},
+  booktitle = {Proceedings of the 38th AAAI Conference on Artificial Intelligence},
+  year      = {2026}
+}
+```
+
+---
+
+## 11. License
+
+Code is released for **non‑commercial research** under the MIT License.  
+External dependencies retain their original licenses.
+
+---
+
+## 12. Contact
+
+Questions? Open an issue or email **<your-email>@example.com**.
+
+---
+
+### 中文速览
+
+1. `conda env create -f environment.yml` 或 §2 手动安装  
+2. 数据集放入 `datasets/`（见 §3）  
+3. UniMedCLIP 权重放入 `baselines/UniMed-CLIP/checkpoints/`  
+4. 零样本：`python runner/run.py --baseline unimedclip --variant +wstc --dataset chestxray14`  
+5. k‑shot：`python trainer/train_cls.py --variant +wstc_train --kshot 5 ...`  
+6. 分割：`python trainer/train_seg.py --dataset monuseg`
+
+---
+
+**Save this file as `README.md` in the root of your supplementary zip.**
