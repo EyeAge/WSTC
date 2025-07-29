@@ -1,6 +1,6 @@
 # WSTC: Task‑Adaptive Visual–Linguistic Modeling via Semantic Embedding and Diffusion Projection
 
----
+[//]: # (---)
 
 ## 1. Repository Structure
 
